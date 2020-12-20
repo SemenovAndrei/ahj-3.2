@@ -41,15 +41,15 @@ export default class TasksList {
     this.cleanTasksList();
 
     if (this.getTaskValue()) {
-      console.log(this.tasksArray);
       this.tasksArray.add(this.getTaskValue());
+      console.log(this.tasksArray);
     }
 
     if (!this.tasksArray.size) {
       this.taskContainer.textContent = 'No tasks found';
     } else {
       this.tasksArray.forEach((e) => {
-        console.log(this.tasksArray);
+        console.log(e);
         this.taskContainer.appendChild(this.task.getTask(e).node);
       });
 
@@ -80,12 +80,15 @@ export default class TasksList {
   }
 
   saveTasksList() {
-    this.storage.setItem('tasksList', JSON.stringify(this.tasksArray));
+    this.storage.setItem('tasksList', JSON.stringify([...this.tasksArray]));
+    console.log(this.storage.getItem('tasksList'));
   }
 
   loadTasksList() {
     if (this.storage.getItem('tasksList')) {
-      this.tasksArray = JSON.parse(this.storage.getItem('tasksList'));
+      console.log(JSON.parse(this.storage.getItem('tasksList')));
+      console.log(this.tasksArray);
+      this.tasksArray = new Set(JSON.parse(this.storage.getItem('tasksList')));
     }
   }
 }
