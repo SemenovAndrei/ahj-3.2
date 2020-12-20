@@ -1,10 +1,10 @@
-import Board from './Board';
-import Character from './Character';
-import GoblinGame from './GoblinGame';
+import List from './List';
+import Task from './Task';
+import TasksList from './TasksList';
 
-const board = new Board();
+const list = new List();
 
-const character = new Character();
+const task = new Task();
 
-const goblinGame = new GoblinGame(board, character);
-goblinGame.init();
+const tasksList = new TasksList(list, task);
+tasksList.init();
