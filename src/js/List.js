@@ -38,6 +38,7 @@ export default class List {
     <section class="main">
       <h1 class="title">TOP Tasks</h1>
       <input class="task-field" type="text" placeholder="write the task here" />
+      <div class="hint"></div>
     </section>
     <section class="tasks-pinned">
       <h2 class="title title-pinned">Pinned:</h2>

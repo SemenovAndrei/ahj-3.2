@@ -38,7 +38,10 @@ export default class Task {
   static addMarkUpTask(name) {
     return `
     <div class="task-name">${name}</div>
-    <input type="checkbox" class="task-switch" />
+    <div class="controls">
+      <input type="checkbox" class="task-switch" />
+      <button class="task-delete">delete</button>
+    </div>
     `;
   }
 }

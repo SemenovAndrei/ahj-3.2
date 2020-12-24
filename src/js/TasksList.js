@@ -15,7 +15,7 @@ export default class TasksList {
     this.storage = localStorage;
     this.taskContainer = null;
     this.tasksArray = new Set();
-    this.tasksPinnedArray = [1, 2, 3];
+    this.tasksPinnedArray = new Set();
   }
 
   init() {
@@ -23,6 +23,7 @@ export default class TasksList {
     this.loadTasksList();
     this.addTask();
     this.writeTask();
+    this.deleteTask();
   }
 
   addList() {
@@ -42,19 +43,20 @@ export default class TasksList {
 
     if (this.getTaskValue()) {
       this.tasksArray.add(this.getTaskValue());
-      console.log(this.tasksArray);
     }
 
+    this.showTask();
+  }
+
+  showTask() {
     if (!this.tasksArray.size) {
       this.taskContainer.textContent = 'No tasks found';
     } else {
       this.tasksArray.forEach((e) => {
-        console.log(e);
         this.taskContainer.appendChild(this.task.getTask(e).node);
       });
-
-      this.saveTasksList();
     }
+    this.saveTasksList();
   }
 
   writeTask() {
@@ -62,10 +64,35 @@ export default class TasksList {
       this.storage.setItem('taskField', e.target.value);
 
       if (e.key === 'Enter') {
-        this.addTask();
-        this.cleanTaskValue();
+        this.checkFieldValue();
       }
     });
+  }
+
+  deleteTask() {
+    const container = document.querySelector('.container');
+    container.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (e.target.classList.contains('task-delete')) {
+        const task = e.target.closest('.task');
+        this.tasksArray.delete(task.querySelector('.task-name').textContent);
+        // this.taskContainer.removeChild(task);
+        // this.saveTasksList();
+        this.addTask();
+      }
+    });
+  }
+
+  checkFieldValue() {
+    if (this.getTaskValue()) {
+      this.addTask();
+      this.cleanTaskValue();
+    } else {
+      document.querySelector('.hint').classList.add('hint-active');
+      setTimeout(() => {
+        document.querySelector('.hint').classList.remove('hint-active');
+      }, 2000);
+    }
   }
 
   getTaskValue() {
@@ -81,13 +108,10 @@ export default class TasksList {
 
   saveTasksList() {
     this.storage.setItem('tasksList', JSON.stringify([...this.tasksArray]));
-    console.log(this.storage.getItem('tasksList'));
   }
 
   loadTasksList() {
     if (this.storage.getItem('tasksList')) {
-      console.log(JSON.parse(this.storage.getItem('tasksList')));
-      console.log(this.tasksArray);
       this.tasksArray = new Set(JSON.parse(this.storage.getItem('tasksList')));
     }
   }
