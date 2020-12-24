@@ -31,6 +31,7 @@ export default class TasksList {
     body[0].insertBefore(this.list.getList(), body[0].firstChild);
 
     this.taskField = document.querySelector('.task-field');
+    this.taskContainer = document.querySelector('.tasks-container');
   }
 
   cleanTasksList() {
@@ -38,7 +39,6 @@ export default class TasksList {
   }
 
   addTask() {
-    this.taskContainer = document.querySelector('.tasks-container');
     this.cleanTasksList();
 
     if (this.getTaskValue()) {
