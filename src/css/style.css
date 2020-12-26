@@ -26,12 +26,12 @@ body {
   padding: 5px 10px;
 }
 
-.hint-active::after {
+.hint {
   position: absolute;
   margin-top: 2px;
   font-size: 1rem;
   color: red;
-  content: 'Напишите задачу';
+  content: '';
 }
 
 .tasks-pinned,

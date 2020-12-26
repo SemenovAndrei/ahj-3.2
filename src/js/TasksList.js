@@ -14,16 +14,19 @@ export default class TasksList {
     this.task = task;
     this.storage = localStorage;
     this.taskContainer = null;
-    this.tasksArray = new Set();
-    this.tasksPinnedArray = new Set();
+    this.taskPinnedContainer = null;
+    this.tasksArray = [];
+    this.tasksPinnedArray = [];
+    this.deleteFunc = (e) => { this.deleteTask(e); };
+    this.pinnedFunc = (e) => { this.pinnedTask(e); };
   }
 
   init() {
     this.addList();
     this.loadTasksList();
+    this.addListener();
     this.addTask();
     this.writeTask();
-    this.deleteTask();
   }
 
   addList() {
@@ -32,28 +35,49 @@ export default class TasksList {
 
     this.taskField = document.querySelector('.task-field');
     this.taskContainer = document.querySelector('.tasks-container');
+    this.taskPinnedContainer = document.querySelector('.pinned-tasks-container');
   }
 
   cleanTasksList() {
     this.taskContainer.innerHTML = '';
   }
 
+  addListener() {
+    const container = document.querySelector('.container');
+    container.addEventListener('click', this.deleteFunc);
+    container.addEventListener('click', this.pinnedFunc);
+  }
+
   addTask() {
     this.cleanTasksList();
 
     if (this.getTaskValue()) {
-      this.tasksArray.add(this.getTaskValue());
+      this.checkTitleTask(this.getTaskValue());
     }
 
     this.showTask();
   }
 
+  checkTitleTask(name) {
+    const array = this.tasksArray.filter((e) => e.name === name);
+    if (!array.length) {
+      this.tasksArray.push(this.task.getTask(this.getTaskValue()));
+    } else {
+      TasksList.showHint('Задача уже существует');
+    }
+  }
+
   showTask() {
-    if (!this.tasksArray.size) {
+    if (!this.tasksArray.length) {
       this.taskContainer.textContent = 'No tasks found';
     } else {
       this.tasksArray.forEach((e) => {
-        this.taskContainer.appendChild(this.task.getTask(e).node);
+        if (!e.pinned) {
+          // console.log(e);
+          this.taskContainer.appendChild(e.node);
+        } else {
+          this.taskPinnedContainer.appendChild(this.task.getTask(e).node);
+        }
       });
     }
     this.saveTasksList();
@@ -69,18 +93,30 @@ export default class TasksList {
     });
   }
 
-  deleteTask() {
-    const container = document.querySelector('.container');
-    container.addEventListener('click', (e) => {
+  deleteTask(e) {
+    if (e.target.classList.contains('task-delete')) {
       e.preventDefault();
-      if (e.target.classList.contains('task-delete')) {
-        const task = e.target.closest('.task');
-        this.tasksArray.delete(task.querySelector('.task-name').textContent);
-        // this.taskContainer.removeChild(task);
-        // this.saveTasksList();
-        this.addTask();
-      }
-    });
+      const task = e.target.closest('.task');
+      const name = task.querySelector('.task-name').textContent;
+      this.tasksArray = this.tasksArray.filter((el) => el.name !== name);
+
+      this.addTask();
+    }
+  }
+
+  pinnedTask(e) {
+    if (e.target.classList.contains('task-switch')) {
+      // e.preventDefault();
+      const task = e.target.closest('.task');
+      this.tasksArray.forEach((el) => {
+        if (el.name === task.querySelector('.task-name').textContent) {
+          el.pinned = true;
+        }
+      });
+      console.log(this.tasksArray);
+
+      this.addTask();
+    }
   }
 
   checkFieldValue() {
@@ -88,11 +124,16 @@ export default class TasksList {
       this.addTask();
       this.cleanTaskValue();
     } else {
-      document.querySelector('.hint').classList.add('hint-active');
-      setTimeout(() => {
-        document.querySelector('.hint').classList.remove('hint-active');
-      }, 2000);
+      TasksList.showHint('Напишите задачу');
     }
+  }
+
+  static showHint(message) {
+    const hint = document.querySelector('.hint');
+    hint.textContent = message;
+    setTimeout(() => {
+      hint.textContent = '';
+    }, 2000);
   }
 
   getTaskValue() {
@@ -107,12 +148,16 @@ export default class TasksList {
   }
 
   saveTasksList() {
-    this.storage.setItem('tasksList', JSON.stringify([...this.tasksArray]));
+    this.storage.setItem('tasksList', JSON.stringify(this.tasksArray));
   }
 
   loadTasksList() {
     if (this.storage.getItem('tasksList')) {
-      this.tasksArray = new Set(JSON.parse(this.storage.getItem('tasksList')));
+      this.tasksArray = JSON.parse(this.storage.getItem('tasksList'));
+      this.tasksArray.forEach((e) => {
+        e.node = this.task.getTask(e.name).node;
+      });
     }
+    console.log(this.tasksArray);
   }
 }

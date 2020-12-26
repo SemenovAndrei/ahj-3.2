@@ -5,16 +5,18 @@
  */
 export default class Task {
   constructor() {
-    this.task = {};
+    this.pinned = false;
   }
 
   /**
-   * @return this.task
+   * @return
    */
   getTask(name) {
-    this.createTask(name);
-
-    return this.task;
+    return {
+      name,
+      node: Task.createTask(name),
+      pinned: this.pinned,
+    };
   }
 
   /**
@@ -24,12 +26,12 @@ export default class Task {
    *
    * Записывает задачу в this.task
    */
-  createTask(name) {
+  static createTask(name) {
     const task = document.createElement('article');
     task.classList.add('task');
     task.innerHTML = Task.addMarkUpTask(name);
 
-    this.task.node = task;
+    return task;
   }
 
   /**
