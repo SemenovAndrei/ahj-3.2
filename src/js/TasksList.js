@@ -97,7 +97,7 @@ export default class TasksList {
 
   writeTask() {
     this.taskField.addEventListener('keydown', (e) => {
-      this.storage.setItem('taskField', e.target.value);
+      this.storage.setItem('taskField', e.target.value.replace(/^\s+|\s+$/g, ''));
 
       if (e.key === 'Enter') {
         this.checkFieldValue();
@@ -135,11 +135,11 @@ export default class TasksList {
   }
 
   checkFieldValue() {
-    if (this.getTaskValue()) {
+    if (!this.getTaskValue() || !this.getTaskValue().replace(/\s/g, '')) {
+      TasksList.showHint('Напишите задачу');
+    } else {
       this.addTask();
       this.cleanTaskValue();
-    } else {
-      TasksList.showHint('Напишите задачу');
     }
   }
 
