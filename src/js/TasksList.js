@@ -40,6 +40,7 @@ export default class TasksList {
 
   cleanTasksList() {
     this.taskContainer.innerHTML = '';
+    this.taskPinnedContainer.innerHTML = '';
   }
 
   addListener() {
@@ -68,18 +69,29 @@ export default class TasksList {
   }
 
   showTask() {
-    if (!this.tasksArray.length) {
+    const tasks = this.tasksArray.filter((e) => e.pinned === false);
+    const tasksPinned = this.tasksArray.filter((e) => e.pinned === true);
+
+    if (!tasks.length) {
       this.taskContainer.textContent = 'No tasks found';
     } else {
-      this.tasksArray.forEach((e) => {
-        if (!e.pinned) {
-          // console.log(e);
-          this.taskContainer.appendChild(e.node);
-        } else {
-          this.taskPinnedContainer.appendChild(this.task.getTask(e).node);
-        }
+      tasks.forEach((e) => {
+        this.taskContainer.appendChild(e.node);
       });
     }
+
+    if (!tasksPinned.length) {
+      this.taskPinnedContainer.textContent = 'No pinned tasks';
+    } else {
+      tasksPinned.forEach((e) => {
+        this.taskPinnedContainer.appendChild(e.node);
+        const buttons = this.taskPinnedContainer.querySelectorAll('.task-switch');
+        buttons.forEach((el) => {
+          el.checked = true;
+        });
+      });
+    }
+
     this.saveTasksList();
   }
 
@@ -110,10 +122,13 @@ export default class TasksList {
       const task = e.target.closest('.task');
       this.tasksArray.forEach((el) => {
         if (el.name === task.querySelector('.task-name').textContent) {
-          el.pinned = true;
+          if (e.target.checked) {
+            el.pinned = true;
+          } else {
+            el.pinned = false;
+          }
         }
       });
-      console.log(this.tasksArray);
 
       this.addTask();
     }
