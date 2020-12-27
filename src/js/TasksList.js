@@ -19,6 +19,9 @@ export default class TasksList {
     this.pinnedFunc = (e) => { this.pinnedTask(e); };
   }
 
+  /**
+   * первоначальная инициация
+   */
   init() {
     this.addList();
     this.loadTasksList();
@@ -28,6 +31,12 @@ export default class TasksList {
     this.filterTasks();
   }
 
+  /**
+   * Добавляет на страницу
+   * список с базовой разметкой
+   *
+   * Закрепляет элементы
+   */
   addList() {
     const body = document.getElementsByTagName('body');
     body[0].insertBefore(this.list.getList(), body[0].firstChild);
@@ -37,17 +46,26 @@ export default class TasksList {
     this.taskPinnedContainer = document.querySelector('.pinned-tasks-container');
   }
 
+  /**
+   * Очищает списки задач
+   */
   cleanTasksList() {
     this.taskContainer.innerHTML = '';
     this.taskPinnedContainer.innerHTML = '';
   }
 
+  /**
+   * Добавляет listeners
+   */
   addListener() {
     const container = document.querySelector('.container');
     container.addEventListener('click', this.deleteFunc);
     container.addEventListener('click', this.pinnedFunc);
   }
 
+  /**
+   * Добавляет задачу в список задач
+   */
   addTask() {
     this.cleanTasksList();
 
@@ -59,6 +77,11 @@ export default class TasksList {
     this.saveTasksList();
   }
 
+  /**
+   * Проверяет имя задачи на уникальность
+   *
+   * @param {String} name - name of the task
+   */
   checkNameTask(name) {
     const array = this.tasksArray.filter((e) => e.name.toLowerCase() === name.toLowerCase());
     if (!array.length) {
@@ -68,6 +91,11 @@ export default class TasksList {
     }
   }
 
+  /**
+   * Показывает на странице списки с задачами
+   *
+   * @param {Array} arr - массив задач
+   */
   showTask(arr = this.tasksArray) {
     const tasks = arr.filter((e) => e.pinned === false);
     const tasksPinned = arr.filter((e) => e.pinned === true);
@@ -96,12 +124,21 @@ export default class TasksList {
     }
   }
 
+  /**
+   * Фильтрует задачи по введенному значению
+   */
   filterTasks() {
     this.taskField.addEventListener('input', (e) => {
       this.showFilteredTasks(e.target.value);
     });
   }
 
+  /**
+   * Показывает элементы списка задач
+   * которые начинаются со значения
+   *
+   * @param {String} value - введенное значение
+   */
   showFilteredTasks(value) {
     const str = value.replace(/^\s+|\s+$/g, '').toLowerCase();
     const testString = new RegExp(`^${str}`);
@@ -116,6 +153,9 @@ export default class TasksList {
     }
   }
 
+  /**
+   * Записывает задачу в массив задач
+   */
   writeTask() {
     this.taskField.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
@@ -126,6 +166,11 @@ export default class TasksList {
     });
   }
 
+  /**
+   * Удаляет задачу
+   *
+   * @param {event} e - event
+   */
   deleteTask(e) {
     if (e.target.classList.contains('task-delete')) {
       e.preventDefault();
@@ -137,6 +182,11 @@ export default class TasksList {
     }
   }
 
+  /**
+   * Закрепляет \ открепляет задачу
+   *
+   * @param {event} e - event
+   */
   pinnedTask(e) {
     if (e.target.classList.contains('task-switch')) {
       const task = e.target.closest('.task');
@@ -154,6 +204,9 @@ export default class TasksList {
     }
   }
 
+  /**
+   * Проверяет поле ввода на заполненность
+   */
   checkFieldValue() {
     if (!this.getTaskValue()) {
       TasksList.showHint('Напишите задачу');
@@ -163,6 +216,11 @@ export default class TasksList {
     }
   }
 
+  /**
+   * Показывает переданное сообщение
+   *
+   * @param {string} message - сообщение
+   */
   static showHint(message) {
     const hint = document.querySelector('.hint');
     hint.textContent = message;
@@ -171,21 +229,33 @@ export default class TasksList {
     }, 2000);
   }
 
+  /**
+   * Возвращает значение из localStorage
+   */
   getTaskValue() {
     if (this.storage.getItem('taskField')) {
       return this.storage.getItem('taskField');
     }
   }
 
+  /**
+   * Очищает записанное в localStorage значение
+   */
   cleanTaskValue() {
     this.taskField.value = '';
     this.storage.removeItem('taskField');
   }
 
+  /**
+   * Сохраняет массив задач в localStorage
+   */
   saveTasksList() {
     this.storage.setItem('tasksList', JSON.stringify(this.tasksArray));
   }
 
+  /**
+   * Загружает массив задач из localStorage
+   */
   loadTasksList() {
     if (this.storage.getItem('tasksList')) {
       this.tasksArray = JSON.parse(this.storage.getItem('tasksList'));
