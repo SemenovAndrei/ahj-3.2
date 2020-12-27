@@ -3,20 +3,25 @@
 }
 
 body {
-  background: rgb(0, 0, 0);
-  color:rgb(12, 243, 4);
+  background-color: rgba(236, 178, 18, 0.247);
   line-height: 1.2;
+}
 
-  /* -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  user-select: none; */
+body::before {
+  position: absolute;
+  content: '';
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: black;
+  opacity: 0.2;
+  z-index: -1;
 }
 
 .container {
   max-width: 1920px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 20px auto;
   padding-left: 15px;
   padding-right: 15px;
 }
@@ -45,10 +50,35 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 5px 0;
+  border-bottom: 2px solid #000;
 }
 
 .controls {
   display: flex;
-  align-items: center;
+}
+
+.task-switch-label {
+  position: relative;
+  display: inline-block;
+  margin-right: 1rem;
+}
+
+.task-switch {
+  display: none;
+}
+
+.mark::after {
+  content: "➕";
+}
+
+.task-switch:checked + .mark::after {
+  content: "\1F4CC";
+}
+
+.task-delete {
+  display: block;
+  width: 48px;
+  height: 24px;
+
 }
 

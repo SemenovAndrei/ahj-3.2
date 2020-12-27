@@ -1,5 +1,3 @@
-/* eslint-disable consistent-return */
-
 /**
  * @class TasksList
  */
@@ -27,6 +25,7 @@ export default class TasksList {
     this.addListener();
     this.addTask();
     this.writeTask();
+    this.filterTasks();
   }
 
   addList() {
@@ -53,14 +52,15 @@ export default class TasksList {
     this.cleanTasksList();
 
     if (this.getTaskValue()) {
-      this.checkTitleTask(this.getTaskValue());
+      this.checkNameTask(this.getTaskValue());
     }
 
     this.showTask();
+    this.saveTasksList();
   }
 
-  checkTitleTask(name) {
-    const array = this.tasksArray.filter((e) => e.name === name);
+  checkNameTask(name) {
+    const array = this.tasksArray.filter((e) => e.name.toLowerCase() === name.toLowerCase());
     if (!array.length) {
       this.tasksArray.push(this.task.getTask(this.getTaskValue()));
     } else {
@@ -68,13 +68,15 @@ export default class TasksList {
     }
   }
 
-  showTask() {
-    const tasks = this.tasksArray.filter((e) => e.pinned === false);
-    const tasksPinned = this.tasksArray.filter((e) => e.pinned === true);
+  showTask(arr = this.tasksArray) {
+    const tasks = arr.filter((e) => e.pinned === false);
+    const tasksPinned = arr.filter((e) => e.pinned === true);
 
     if (!tasks.length) {
       this.taskContainer.textContent = 'No tasks found';
     } else {
+      this.taskContainer.textContent = '';
+
       tasks.forEach((e) => {
         this.taskContainer.appendChild(e.node);
       });
@@ -83,6 +85,7 @@ export default class TasksList {
     if (!tasksPinned.length) {
       this.taskPinnedContainer.textContent = 'No pinned tasks';
     } else {
+      this.taskPinnedContainer.textContent = '';
       tasksPinned.forEach((e) => {
         this.taskPinnedContainer.appendChild(e.node);
         const buttons = this.taskPinnedContainer.querySelectorAll('.task-switch');
@@ -91,15 +94,33 @@ export default class TasksList {
         });
       });
     }
+  }
 
-    this.saveTasksList();
+  filterTasks() {
+    this.taskField.addEventListener('input', (e) => {
+      this.showFilteredTasks(e.target.value);
+    });
+  }
+
+  showFilteredTasks(value) {
+    const str = value.replace(/^\s+|\s+$/g, '').toLowerCase();
+    const testString = new RegExp(`^${str}`);
+    if (testString) {
+      const noPinnedTasks = this.tasksArray.filter((el) => el.pinned === false);
+      const pinnedTasks = this.tasksArray.filter((el) => el.pinned === true);
+      const filteredTasks = noPinnedTasks
+        .filter((el) => testString.test(el.name.toLowerCase()));
+      const result = [...filteredTasks, ...pinnedTasks];
+
+      this.showTask(result);
+    }
   }
 
   writeTask() {
     this.taskField.addEventListener('keydown', (e) => {
-      this.storage.setItem('taskField', e.target.value.replace(/^\s+|\s+$/g, ''));
-
       if (e.key === 'Enter') {
+        this.storage.setItem('taskField', e.target.value.replace(/^\s+|\s+$/g, ''));
+
         this.checkFieldValue();
       }
     });
@@ -118,7 +139,6 @@ export default class TasksList {
 
   pinnedTask(e) {
     if (e.target.classList.contains('task-switch')) {
-      // e.preventDefault();
       const task = e.target.closest('.task');
       this.tasksArray.forEach((el) => {
         if (el.name === task.querySelector('.task-name').textContent) {
@@ -129,13 +149,13 @@ export default class TasksList {
           }
         }
       });
-
-      this.addTask();
+      this.saveTasksList();
+      this.showFilteredTasks(this.taskField.value);
     }
   }
 
   checkFieldValue() {
-    if (!this.getTaskValue() || !this.getTaskValue().replace(/\s/g, '')) {
+    if (!this.getTaskValue()) {
       TasksList.showHint('Напишите задачу');
     } else {
       this.addTask();
@@ -173,6 +193,5 @@ export default class TasksList {
         e.node = this.task.getTask(e.name).node;
       });
     }
-    console.log(this.tasksArray);
   }
 }

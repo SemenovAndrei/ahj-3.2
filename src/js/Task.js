@@ -9,6 +9,10 @@ export default class Task {
   }
 
   /**
+   * Возвращает задачу с базовой разметкой
+   *
+   * @param {string} name - name of the task
+   *
    * @return
    */
   getTask(name) {
@@ -41,8 +45,11 @@ export default class Task {
     return `
     <div class="task-name">${name}</div>
     <div class="controls">
+    <label class="task-switch-label">
       <input type="checkbox" class="task-switch" />
-      <button class="task-delete">delete</button>
+      <div class="mark"></div>
+    </label>
+      <button class="task-delete">❌</button>
     </div>
     `;
   }
