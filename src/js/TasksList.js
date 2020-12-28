@@ -178,7 +178,8 @@ export default class TasksList {
       const name = task.querySelector('.task-name').textContent;
       this.tasksArray = this.tasksArray.filter((el) => el.name !== name);
 
-      this.addTask();
+      this.saveTasksList();
+      this.showFilteredTasks(this.taskField.value);
     }
   }
 
