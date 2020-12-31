@@ -7,18 +7,6 @@ body {
   line-height: 1.2;
 }
 
-body::before {
-  position: absolute;
-  content: '';
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: black;
-  opacity: 0.2;
-  z-index: -1;
-}
-
 .container {
   max-width: 1920px;
   margin: 20px auto;
