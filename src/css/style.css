@@ -55,6 +55,10 @@ body {
   display: none;
 }
 
+.mark {
+  cursor: pointer;
+}
+
 .mark::after {
   content: "➕";
 }
@@ -64,6 +68,7 @@ body {
 }
 
 .task-delete {
+  cursor: pointer;
   display: block;
   width: 48px;
   height: 24px;
